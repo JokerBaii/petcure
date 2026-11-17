@@ -3,37 +3,47 @@ import QtQuick.Layouts
 import ".."
 import "../components"
 ColumnLayout {
-    spacing: 16
-    RowLayout {
-        Layout.fillWidth: true; spacing: 12
-        Metric { Layout.fillWidth: true; title: "今日清洁"; value: App.count + " 次" }
-        Metric { Layout.fillWidth: true; title: "最近一次"; value: App.lastTime; accent: "#79af9e" }
-    }
+    spacing: 20
     Card {
-        Layout.fillWidth: true; implicitHeight: 350
+        Layout.fillWidth: true; implicitHeight: 480
         ColumnLayout {
-            anchors.fill: parent; anchors.margins: 22; spacing: 14
-            SectionTitle { text: "清洁记录"; Layout.fillWidth: true }
+            anchors.fill: parent; anchors.margins: 28; spacing: 16
+            RowLayout { Layout.fillWidth: true
+                ColumnLayout { Layout.fillWidth: true; spacing: 5
+                    SectionTitle { text: "清洁记录" }
+                    SmallText { text: "今日 " + App.count + " 次  ·  最近一次 " + App.lastTime + "  ·  演示数据" }
+                }
+                Rectangle { color: Theme.chip; radius: Theme.radiusPill; implicitWidth: countLabel.implicitWidth + 28; implicitHeight: 30
+                    LabelText { id: countLabel; anchors.centerIn: parent; text: App.records.length + " 条记录"; font.pixelSize: 12; color: Theme.muted }
+                }
+            }
             Item {
                 visible: App.records.length === 0; Layout.fillWidth: true; Layout.fillHeight: true
-                ColumnLayout {
-                    anchors.centerIn: parent; spacing: 8
-                    Image { source: "../../assets/images/empty-records-puppy.png"; fillMode: Image.PreserveAspectFit; Layout.preferredWidth: 220; Layout.preferredHeight: 180; Layout.alignment: Qt.AlignHCenter; asynchronous: true }
-                    LabelText { text: "暂无清洁记录"; font.pixelSize: 15; Layout.alignment: Qt.AlignHCenter }
+                RowLayout { anchors.centerIn: parent; width: Math.min(parent.width - 32, 560); height: Math.min(parent.height - 24, 260); spacing: 24
+                    Image { source: "../../assets/images/pet-rest-anime.png"; fillMode: Image.PreserveAspectFit; Layout.preferredWidth: parent.width * 0.5; Layout.fillHeight: true; asynchronous: true }
+                    ColumnLayout { Layout.fillWidth: true; spacing: 8
+                        LabelText { text: "还没有清洁记录"; font.pixelSize: 18; font.bold: true; Layout.fillWidth: true; wrapMode: Text.Wrap }
+                        SmallText { text: "完成一次模拟清洁后，记录会出现在这里。"; Layout.fillWidth: true; wrapMode: Text.Wrap }
+                    }
                 }
             }
             ColumnLayout {
                 visible: App.records.length > 0; Layout.fillWidth: true; Layout.fillHeight: true; spacing: 0
                 Repeater {
                     model: App.records
-                    delegate: Rectangle {
+                    delegate: ColumnLayout {
+                        required property int index
                         required property var modelData
-                        Layout.fillWidth: true; Layout.preferredHeight: 55; color: "transparent"
-                        RowLayout { anchors.fill: parent
+                        Layout.fillWidth: true; spacing: 0
+                        Rectangle { visible: index > 0; Layout.fillWidth: true; Layout.preferredHeight: 2; color: Theme.border }
+                        RowLayout {
+                            Layout.fillWidth: true; Layout.preferredHeight: 58; spacing: 12
+                            Image { source: "../../assets/icons/history.svg"; Layout.preferredWidth: 20; Layout.preferredHeight: 20 }
                             LabelText { text: modelData.time; Layout.fillWidth: true }
-                            LabelText { text: modelData.result; color: "#52785c" }
+                            Rectangle { radius: Theme.radiusPill; implicitWidth: 72; implicitHeight: 28; color: Theme.okBg
+                                LabelText { anchors.centerIn: parent; text: modelData.result; color: Theme.ok; font.pixelSize: 12; font.bold: true }
+                            }
                         }
-                        Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: "#eee8e1" }
                     }
                 }
                 Item { Layout.fillHeight: true }
